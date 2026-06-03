@@ -1,0 +1,21 @@
+{
+  "name": "playwright-mini-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+  "test": "playwright test",
+  "allure:generate": "allure generate ./allure-results -o allure-report --clean",
+  "allure:open": "allure open allure-report"
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.7.0",
+    "allure-commandline": "^2.42.0",
+    "allure-playwright": "^3.9.0"
+  }
+}
