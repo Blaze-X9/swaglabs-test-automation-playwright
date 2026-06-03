@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
 test.describe('Login Tests', () => {
     test('user can login', async ({ page }) => {
         const productListingPage = new ProductListingPage(page);
-        await expect(productListingPage.getTitle()).resolves.toBe('Product');
+        await expect(productListingPage.getTitle()).resolves.toBe('Products');
     });
 
     test('login with invalid credentials shows error', async ({ page }) => {
