@@ -1,0 +1,120 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: e2e.spec.js >> Login Tests >> user can login
+- Location: tests\e2e.spec.js:14:10
+
+# Error details
+
+```
+TypeError: Cannot read properties of undefined (reading 'standardUser')
+```
+
+# Test source
+
+```ts
+  1  | import { test, expect } from '@playwright/test';
+  2  | import LoginPage from '../pages/LoginPage';
+  3  | import ProductListingPage from '../pages/ProductListingPage';
+  4  | import CartPage from '../pages/CartPage';
+  5  | import CheckoutPage from '../pages/CheckoutPage';
+  6  | import ProductDetailsPage from '../pages/ProductDetailsPage';
+  7  | import users from '../test-data/users';
+  8  | import products from '../test-data/products';
+  9  | 
+  10 | test.describe.configure({mode: 'parallel'});
+  11 | 
+  12 | 
+  13 | test.describe('Login Tests', () => {
+  14 |     test.only('user can login', async ({ page }) => {
+  15 |         const loginPage = new LoginPage(page);
+> 16 |         await loginPage.login(users.standardUser.username, users.standardUser.password);
+     |                                     ^ TypeError: Cannot read properties of undefined (reading 'standardUser')
+  17 | 
+  18 |         const productListingPage = new ProductListingPage(page);
+  19 |         await expect(productListingPage.getTitle()).toHaveText('Products');
+  20 |     });
+  21 | 
+  22 |     test('login with invalid credentials shows error', async ({ page }) => {
+  23 |         const loginPage = new LoginPage(page);
+  24 |         await loginPage.login(users.invalidUser.username, users.invalidUser.password);
+  25 |         await expect(loginPage.getErrorMessage()).toBeVisible();
+  26 |     });
+  27 | });
+  28 | 
+  29 | test.describe('Cart Tests', () => {
+  30 |     let loginPage;
+  31 |     let productListingPage;
+  32 |     let cartPage;
+  33 |     test.beforeEach(async ({ page }) => {
+  34 |         loginPage = new LoginPage(page);
+  35 |         await loginPage.login(users.standardUser.username, users.standardUser.password);
+  36 | 
+  37 |         productListingPage = new ProductListingPage(page);
+  38 |         await productListingPage.addItemToCart(products.backpack);
+  39 |         cartPage = new CartPage(page);
+  40 |     });
+  41 |     test('user can add item to cart', async ({ page }) => {
+  42 |         await productListingPage.clickOnCart();
+  43 |         await expect(cartPage.getCartItems()).toBeVisible();
+  44 |     });
+  45 | 
+  46 |     test('user can remove item from cart', async ({ page }) => {
+  47 |         await productListingPage.clickOnCart();
+  48 |         await cartPage.removeItemFromCart(products.backpack);
+  49 |         await expect(cartPage.getCartItems()).not.toBeVisible();
+  50 |     });
+  51 | 
+  52 |     test('user can remove item from cart from product page', async ({ page }) => {
+  53 |         await productListingPage.removeItemFromCart(products.backpack);
+  54 |         await productListingPage.clickOnCart();
+  55 |         await expect(cartPage.getCartItems()).not.toBeVisible();
+  56 |     });
+  57 | });
+  58 | 
+  59 | test('user can checkout', async ({ page }) => {
+  60 |     const loginPage = new LoginPage(page);
+  61 |     await loginPage.login(users.standardUser.username, users.standardUser.password);
+  62 | 
+  63 |     const productListingPage = new ProductListingPage(page);
+  64 |     await productListingPage.addItemToCart(products.backpack);
+  65 |     await productListingPage.clickOnCart();
+  66 | 
+  67 |     const cartPage = new CartPage(page);
+  68 |     await cartPage.clickCheckout();
+  69 | 
+  70 |     const checkoutPage = new CheckoutPage(page);
+  71 |     await checkoutPage.fillShippingInformation('Suryaveer', 'Rathore', '12345');
+  72 |     await checkoutPage.clickContinue();
+  73 |     await checkoutPage.clickFinish();
+  74 |     await expect(checkoutPage.getOrderConfirmation()).resolves.toBe('Thank you for your order!');
+  75 | });
+  76 | 
+  77 | test('user can logout', async ({ page }) => {
+  78 |     const loginPage = new LoginPage(page);
+  79 |     await loginPage.login(users.standardUser.username, users.standardUser.password);
+  80 | 
+  81 |     const productListingPage = new ProductListingPage(page);
+  82 |     await productListingPage.clickOnMenu();
+  83 |     await productListingPage.clickOnLogout();
+  84 |     await expect(loginPage.getTitle()).toBeVisible();
+  85 | });
+  86 | 
+  87 | test('user can view product details', async ({ page }) => {
+  88 |     const loginPage = new LoginPage(page);
+  89 |     await loginPage.login(users.standardUser.username, users.standardUser.password);
+  90 | 
+  91 |     const productListingPage = new ProductListingPage(page);
+  92 |     await productListingPage.clickonProduct(products.backpack);
+  93 | 
+  94 |     const productDetailsPage = new ProductDetailsPage(page);
+  95 |     await expect(productDetailsPage.getProductName()).toHaveText(products.backpack);
+  96 | });
+  97 | 
+  98 | 
+```
