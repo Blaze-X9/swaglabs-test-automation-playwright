@@ -17,14 +17,14 @@ test('user can remove item from cart', async ({ ProductListingPage, CartPage }) 
     await ProductListingPage.addItemToCart(products.backpack);
     await ProductListingPage.clickOnCart();
     await CartPage.removeItemFromCart(products.backpack);
-    await expect(CartPage.getCartItems()).not.toBeVisible();
+    await expect(CartPage.getCartItems()).toHaveCount(0);
 });
 
-test('user can remove item from cart from product page', async ({ ProductListingPage, CartPage }) => {
+test.only('user can remove item from cart from product page', async ({ ProductListingPage, CartPage }) => {
     await ProductListingPage.addItemToCart(products.backpack);
     await ProductListingPage.removeItemFromCart(products.backpack);
     await ProductListingPage.clickOnCart();
-    await expect(CartPage.getCartItems()).not.toBeVisible();
+    await expect(CartPage.getCartItems()).toHaveCount(0);
 });
 
 test('user can add multiple items to cart', async ({ ProductListingPage, CartPage }) => {
