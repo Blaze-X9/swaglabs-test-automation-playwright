@@ -1,71 +1,65 @@
 export default class ProductListingPage {
     constructor(page) {
         this.page = page;
-        }
 
-    getTitle() {
-        return this.page.locator('.title');
+        this.title = this.page.locator('.title');
+        this.productRows = this.page.locator('.inventory_item');
+        this.cartLink = this.page.locator('a.shopping_cart_link');
+        this.menuButton = this.page.getByRole('button', { name: 'Open Menu' });
+        this.logoutButton = this.page.getByRole('link', { name: 'Logout' });   
+        this.sortLink = this.page.locator('.product_sort_container'); 
+        this.productNames = this.page.locator('.inventory_item_name');
+        this.productPrices = this.page.locator('.inventory_item_price');
     }
 
-    async addItemToCart(itemName) {
-        const items = await this.page.locator('.inventory_item');
-        const count = await items.count();
-        for(let i = 0; i < count; i++) {
-            const name = await items.nth(i).locator('.inventory_item_name').innerText();
-            if(name === itemName) {
-                await items.nth(i).locator('button').click();
-                break;
-            }
-        }   
+    getTitle() {
+        return this.title;
+    }
+
+    async addItemToCart(itemName) {  
+        const items = this.productRows
+        .filter({ hasText: itemName })
+        .getByRole('button', { name: 'Add to cart' });
+        await items.click();
     }
 
     async removeItemFromCart(itemName) {
-        const items = await this.page.locator('.inventory_item');
-        const count = await items.count();
-        for(let i = 0; i < count; i++) {
-            const name = await items.nth(i).locator('.inventory_item_name').innerText();
-            if(name === itemName) {
-                await items.nth(i).locator('button').click();
-                break;
-            }
-        }   
+        const items = this.productRows
+        .filter({ hasText: itemName })
+        .getByRole('button', { name: 'Remove' });
+        await items.click();
     }
 
     async clickOnProduct(itemName) {
-        const items = await this.page.locator('.inventory_item');
-        const count = await items.count();  
-        for(let i = 0; i < count; i++) {
-            const name = await items.nth(i).locator('.inventory_item_name').innerText();
-            if(name === itemName) {
-                await items.nth(i).locator('.inventory_item_name').click();
-                break;
-            }
-        }   
+        const itemLink = this.productRows
+        .filter({ hasText: itemName })
+        .locator('.inventory_item_name');
+        await itemLink.click();  
     }
 
     async clickOnCart() {
-        await this.page.locator('a.shopping_cart_link').click();
+        await this.cartLink.click();
     }
 
     async clickOnMenu() {
-        await this.page.getByRole('button', { name: 'Open Menu' }).click();
-    }   
+        await this.menuButton.click();
+    }
 
     async clickOnLogout() {
-        await this.page.getByRole('link', { name: 'Logout' }).click();
-    }  
-    
+        await this.logoutButton.click();
+    }
+
     async sortProductsBy(option){
-        await this.page.locator('.product_sort_container').selectOption(option);
+        await this.sortLink.selectOption(option);
     }
 
     async getProductNames() {
-        const names = await this.page.locator('.inventory_item_name').allInnerTexts();
+        const names = await this.productNames.allInnerTexts();
         return names;
     }
 
     async getProductPrices() {
-        const textPrices = await this.page.locator('.inventory_item_price').allInnerTexts();
+        const textPrices = await this.productPrices.allInnerTexts();
         const prices = textPrices.map(val => parseFloat(val.replace(/[^0-9.-]+/g, '')));
         return prices;
     }

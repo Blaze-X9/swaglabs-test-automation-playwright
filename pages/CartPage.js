@@ -1,18 +1,24 @@
 export default class CartPage {
     constructor(page) {
         this.page = page;
+
+        this.cartItems = this.page.locator('.inventory_item_name');
+        this.cartBadge = this.page.locator('.shopping_cart_badge');
+        this.itemPrices = this.page.locator('.inventory_item_price');
+        this.checkoutButton = this.page.getByRole('button', { name: 'Checkout' });
+        this.cartItemRows = this.page.locator('.cart_item');
     }
 
     getCartItems() {
-        return this.page.locator('.inventory_item_name');
+        return this.cartItems;
     }
 
     getCartBadge() {
-        return this.page.locator('.shopping_cart_badge');
+        return this.cartBadge;
     }
 
     async getCartPrice() {
-        const textPrice = await this.page.locator('.inventory_item_price').allInnerTexts();
+        const textPrice = await this.itemPrices.allInnerTexts();
 
         const sum = textPrice
             .map(val => parseFloat(val.replace(/[^0-9.-]+/g, '')))
@@ -22,18 +28,13 @@ export default class CartPage {
     }
 
     async clickCheckout() {
-        await this.page.getByRole('button', { name: 'Checkout' }).click();
+        await this.checkoutButton.click();
     }
 
     async removeItemFromCart(itemName) {
-        const items = await this.page.locator('div.cart_item');
-        const count = await items.count();
-        for (let i = 0; i < count; i++) {
-            const name = await items.nth(i).locator('.inventory_item_name').innerText();
-            if (name === itemName) {
-                await items.nth(i).locator('button').click();
-                break;
-            }
-        }
+        const itemRow = this.cartItemRows
+            .filter({ hasText: itemName })
+            .getByRole('button', { name: 'Remove' });
+        await itemRow.click();
     }
 }
