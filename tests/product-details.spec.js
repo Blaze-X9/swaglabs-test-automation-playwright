@@ -7,26 +7,28 @@ test.beforeEach(async ({ LoginPage }) => {
 });
 
 test('user can view product details', async ({ ProductListingPage, ProductDetailsPage }) => {
-    await ProductListingPage.clickonProduct(products.backpack);
+    await ProductListingPage.clickOnProduct(products.backpack);
     await expect(ProductDetailsPage.getProductName()).toHaveText(products.backpack);
 });
 
 test('user can sort products alphabetically', async ({ ProductListingPage }) => {
     await ProductListingPage.sortProductsBy('za');
     const productNames = await ProductListingPage.getProductNames();
-    const sortedNames = productNames.sort().reverse();
+    const sortedNames = [...productNames].sort().reverse();
     expect(productNames).toEqual(sortedNames);
     await ProductListingPage.sortProductsBy('az');
-    const sortedNamesAZ = productNames.sort();
-    expect(productNames).toEqual(sortedNamesAZ);
+    const productNamesAZ = await ProductListingPage.getProductNames();
+    const sortedNamesAZ = [...productNamesAZ].sort();
+    expect(productNamesAZ).toEqual(sortedNamesAZ);
 });
 
 test('user can sort products by price', async ({ ProductListingPage }) => {
     await ProductListingPage.sortProductsBy('lohi');
-    const productPrices = await ProductListingPage.getProductPrices();
-    const sortedPrices = productPrices.sort((a, b) => a - b);
-    expect(productPrices).toEqual(sortedPrices);
+    const productPricesLOHI = await ProductListingPage.getProductPrices();
+    const sortedPrices = [...productPricesLOHI].sort((a, b) => a - b);
+    expect(productPricesLOHI).toEqual(sortedPrices);
     await ProductListingPage.sortProductsBy('hilo');
-    const sortedPricesHI = productPrices.sort((a, b) => b - a);
-    expect(productPrices).toEqual(sortedPricesHI);
+    const productPricesHILO = await ProductListingPage.getProductPrices();
+    const sortedPricesHI = [...productPricesHILO].sort((a, b) => b - a);
+    expect(productPricesHILO).toEqual(sortedPricesHI);
 });

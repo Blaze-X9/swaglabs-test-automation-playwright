@@ -31,7 +31,7 @@ export default class ProductListingPage {
         }   
     }
 
-    async clickonProduct(itemName) {
+    async clickOnProduct(itemName) {
         const items = await this.page.locator('.inventory_item');
         const count = await items.count();  
         for(let i = 0; i < count; i++) {

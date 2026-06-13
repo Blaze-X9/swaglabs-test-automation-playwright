@@ -48,5 +48,5 @@ test('verify total price on checkout page', async ({ ProductListingPage, CartPag
     await CheckoutPage.clickContinue();
     const tax = await CheckoutPage.getTaxAmount();
     const total = await CheckoutPage.getTotalAmount();
-    expect(total).toBe(itemTotal + tax);
+    expect(total).toBeCloseTo(itemTotal + tax, 2);
 });
